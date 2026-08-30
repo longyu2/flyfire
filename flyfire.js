@@ -14,7 +14,7 @@ class Sprite {
 
     speed
     enabled
-    constructor(x, y, width, height, mode = "rect", z = 1) {
+    constructor(x, y, width, height, mode = "rect", z = 1, app = undefined) {
         this.x = x
         this.y = y
         this.width = width
@@ -27,7 +27,13 @@ class Sprite {
         this.lastAngle = 0
         this.z = z
         this.backgroundColor = "black"
+        this.app = app
+        if (app != undefined) {
+            app.regist(this)
+        }
     }
+
+
 
     // 碰撞盒默认不带旋转，带旋转的碰撞需单独计算
     // 中心点碰撞检测（直接传入sprite原始数据，无需换算左上角）
@@ -141,10 +147,17 @@ class Flyfire {
         }
     }
     regist(sprite) {
-        this.sprites.push(sprite)
+        if (this.sprites.includes(sprite)) {
+            console.warn('Sprite 已注册，跳过');
+            return this;
+        }
+        this.sprites.push(sprite);
+
     }
     registArr(sprites) {
-        this.sprites = this.sprites.concat(sprites)
+        for (const sprite of sprites) {
+            this.regist(sprite);
+        }
     }
 }
 
@@ -164,7 +177,7 @@ class Tool {
         if (fill) {
             ctx.fill();
         }
-        else{
+        else {
             ctx.stroke()
         }
         ctx.closePath()
